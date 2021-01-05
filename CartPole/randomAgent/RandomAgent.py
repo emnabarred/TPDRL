@@ -1,6 +1,6 @@
 import gym
 import matplotlib.pyplot as plt
-from CartPole.randomAgent.ReplayExperience import Replay
+from CartPole.randomAgent.ReplayMemory import Memory
 
 # parametres
 numEpisods = 10
@@ -8,12 +8,12 @@ maxStep = 100
 bufferSize = 10000
 batchSize = 100
 
-# variables
+# pour calculer la récompense dans chaque épisode
 sumreward = 0
 
 # instances
 env = gym.make('CartPole-v1')
-memory = Replay(bufferSize)
+memory = Memory(bufferSize)
 scores= []
 
 def plotting(score):
@@ -21,12 +21,12 @@ def plotting(score):
     plt.plot(score)
     plt.title("Suivi évolution")
     plt.xlabel("Épisode")
-    plt.ylabel("Pas")
+    plt.ylabel("Step")
     plt.grid()
     plt.savefig('evolutionRandomAgent.png')
     plt.pause(0.001)
 
-for i_episode in range(numEpisods):
+for e in range(numEpisods):
     state = env.reset()
     done = False
     observation = env.reset()

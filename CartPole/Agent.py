@@ -1,11 +1,10 @@
 import random
 import torch
-from random import randint
 
 class Agent():
-    def __init__(self, strategy, actionSize, device, memory, targetNet, policyNet, optimizer):
+    def __init__(self, strategy, actionSize, device, memory, targetNet, policyNet, optimizer, criterion):
         self.currentStep = 0
-        self.sc = 0
+        self.steoCounter = 0
         self.strategy = strategy
         self.actionsSize = actionSize
         self.device = device
@@ -13,22 +12,26 @@ class Agent():
         self.targetNet = targetNet
         self.policyNet = policyNet
         self.optimizer = optimizer
+        self.criterion = criterion
 
 
     def select_action(self, state, test=False):
-        r = self.strategy.getExplorationRate(self.currentStep)
+        lr = self.strategy.getExplorationRate(self.currentStep)
         self.currentStep += 1
         state = torch.FloatTensor(state).to(self.device)
         Q = self.targetNet(state).view([-1])
-
-        # exploitation
+        # si test est false, c'est à dire qu'on fait de l'exploitation
+        # exploitation: on prend l'action qui a la q valeur maximale
         if test:
             action = torch.argmax(Q).item()
 
-        # exploration
+
+        # En mode test: si le learning rate est inferieur à
+        # la variable aléatoire r, c'est qu'il faut exploiter
         else:
-            if r < random.random() or test:
+            if lr < random.uniform(0, 1) or test:
                 action = torch.argmax(Q).item()
+            #sinon on explore au hazard parmis les actions possible
             else:
                 action = random.randrange(self.actionsSize)
 
@@ -41,6 +44,7 @@ class Agent():
     def learn(self, trainStep, batchSize, gamma):
         r = self.strategy.getExplorationRate(self.currentStep)
         self.sc =+1
+        print(self.sc)
 
         if self.sc < trainStep:
             return
