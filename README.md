@@ -49,19 +49,23 @@ Le réseau neuronal créé est un perceptron multi-couches. Il est composé d'un
 On utilise des fonction max et argmax en dehors du réseau neuronal, à l'intérieur des fonctions activant le réseau. 
 
 **Question 6:**
-La stratégie que nous avons choisit c’est la méthode e-greedy. 
-e étant le ratio d'exploitation, initialisé à 1 au début car l’agent ignore l'environnement. En explorant son environnement, la valeur d’epsilon se décrète grâce à la fonction getExplorationRate() implémenté dans la classe Strategie. e représente la probabilité de vouloir explorer. 
+La stratégie que nous avons choisit c’est la méthode ε − greedy. 
+ε étant le ratio d'exploitation, initialisé à 1 au début car l’agent ignore l'environnement. 
+Dans la classe stratégie, nous avons implémenté la méthode getExplorationRate() qui donne le ratio de l'exploration (epsilon) après avoir effectué l’expontential decay. Ceci permet de réduire la valeur d’epsilon d’une façon exponentielle par rapport à sa valeur. ε représente en quelque sorte la probabilité de vouloir explorer. 
 
 Pour choisir s'il faut faire de l’exploitation ou de l’exploration, une variable r reçoit une valeur au hasard entre 0 et 1. Si cette valeur est supérieure à ε, alors la prochaine action serait d'exploiter, si non, l’agent explore.
-
-Pour mettre à jour les Q valeurs, en exploitant, 
  
 
 **Question 7:**
+Si on utilise le meme réseau de neurone pour trouver la q valeur calculé et la q valeur target, celui ci ne va pas apprendre. L’état actuel et l’état suivant étant successives donc les poids utilisé pour calculer q pour s ne doivent pas être les meme pour s'; au lieu de converger, les valeurs vont bouger dans le meme sens rendant l'optimisation quasi-impossible.
+au lieu d'utiliser le meme réseau, on a crée un target network pour les q target et un policy network pour les q cackle
+les poids du réseau target sont fixé et égale au poids originales du réseau politique. 
+
 
 **Question 8:**
+Nous avons choisit de mettre a jour les poids du réseau target , chaque 1000 pas d’apprentissage. N est devenu un hyperparametre pour notre DQN
 
-**Question 9:**
+
 
 
 #### Expérience plus difficile : VizDoom
