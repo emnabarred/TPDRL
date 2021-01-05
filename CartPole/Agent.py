@@ -46,7 +46,7 @@ class Agent():
         if self.stepCounter < trainStep:
             return
 
-        batch_loader_loader = torch.utils.data.DataLoader(self.memory.getBatch(batchSize), batch_size=1, shuffle=True)
+        batch_loader_loader = torch.utils.data.DataLoader(self.memory.getBatch(batchSize), batch_size=int(batchSize/2), shuffle=True)
 
         for (state, action, nextState, reward, done) in batch_loader_loader:
             self.optimizer.zero_grad()
