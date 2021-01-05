@@ -1,15 +1,19 @@
-import torch.nn as nn
-import torch.nn.functional as F
+import torch
 
-class Net(nn.Module):
+class Net(torch.nn.Module):
     def __init__(self, actionSize):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(4, 50)
-        self.fc2 = nn.Linear(50, actionSize)
+        self.entry = torch.nn.Linear(4, 37)
+        self.middle_1 = torch.nn.Linear(37, 37)
+        self.middle_2 = torch.nn.Linear(37, 37)
+        self.output = torch.nn.Linear(37, actionSize)
+
+        torch.nn.init.xavier_uniform_(self.entry.weight)
+        torch.nn.init.xavier_uniform_(self.output.weight)
+        torch.nn.init.xavier_uniform_(self.middle_1.weight)
+        torch.nn.init.xavier_uniform_(self.middle_2.weight)
 
     def forward(self, x):
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.fc2(x)
-        return x
-
+        model = torch.nn.Sequential(self.entry, torch.nn.ReLU(), self.middle_1, torch.nn.ReLU(),
+                                    self.middle_2, torch.nn.ReLU(), self.output)
+        return model(x)

@@ -53,13 +53,9 @@ class Agent():
 
         for n in range(NB_EPOCHS):
             for (state, action, nextState, reward, done) in batch_loader_loader:
-                Qcalcul = self.targetNet(state).gather(1, action.long().unsqueeze(1))
-                Qcalcul = Qcalcul.reshape([batchSize])
-                nextQ = self.targetNet(nextState).detach
-                Qtarget = reward + gamma * nextQ.max(1)[0].reshape([batchSize])
-
-                # Optimization
                 self.optimizer.zero_grad()
+                Qcalcul = self.policyNet(state.float())
+                # Qtarget = reward + gamma * nextQ.max(1)[0].reshape([batchSize])
                 loss = self.criterion(Qtarget, Qcalcul)
                 loss.backward()
                 self.optimizer.step()

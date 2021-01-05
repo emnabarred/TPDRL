@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import gym
 import torch.optim as optim
-from CartPole.Strategy import EpsilonGreedyStrategy
-from CartPole.Agent import Agent
-from CartPole.ReplayMemory import Memory
-from CartPole.Net import Net
+from Strategy import EpsilonGreedyStrategy
+from Agent import Agent
+from ReplayMemory import Memory
+from Net import Net
 
 # parametres
 testing = False # test = False : train
