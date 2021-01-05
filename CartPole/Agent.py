@@ -16,12 +16,16 @@ class Agent():
         self.optimizer = optimizer
         self.criterion = criterion
 
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.tempNet = Net(actionSize).to(device)
+        self.tempNet.load_state_dict(targetNet.state_dict())
+
 
     def select_action(self, state, test=False):
         r = random.uniform(0, 1)
         self.currentStep += 1
         state = torch.FloatTensor(state).to(self.device)
-        Q = self.targetNet(state).view([-1])
+        Q = self.policyNet(state)
         # si test est false, c'est à dire qu'on fait de l'exploitation
         # exploitation: on prend l'action qui a la q valeur maximale
         if test:
@@ -55,11 +59,11 @@ class Agent():
             for (state, action, nextState, reward, done) in batch_loader_loader:
                 self.optimizer.zero_grad()
                 Qcalcul = self.policyNet(state.float())
-                # Qtarget = reward + gamma * nextQ.max(1)[0].reshape([batchSize])
+                Qtarget = self.tempNet(state.float())
                 loss = self.criterion(Qtarget, Qcalcul)
                 loss.backward()
                 self.optimizer.step()
 
         # LOG
         if self.sc % 1000 == 0:
-            print("Step ", self.sc, " : Loss = ", loss, ", Epsilon : ", r)
+            self.tempNet.load_state_dict(targetNet.state_dict())
