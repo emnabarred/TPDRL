@@ -24,6 +24,8 @@ class Agent():
         # exploitation: on prend l'action qui a la q valeur maximale
         if test:
             action = torch.argmax(Q).item()
+
+
         # En mode test: si le learning rate est inferieur à
         # la variable aléatoire r, c'est qu'il faut exploiter
         else:
@@ -31,7 +33,8 @@ class Agent():
                 action = torch.argmax(Q).item()
             #sinon on explore au hazard parmis les actions possible
             else:
-                action = self.actionsSize.sample()
+                action = random.randrange(self.actionsSize)
+
         self.targetNet.train()
         return action
 
