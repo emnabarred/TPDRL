@@ -1,5 +1,20 @@
 # TPDRL
 
+## Installation :
+
+```
+git clone https://github.com/emnabarred/TPDRL.git
+cd TPDRL/
+pip3 install pipenv
+pipenv shell
+pip3 install -r requirements.txt
+```
+## Execution
+
+```
+python3 Main.py
+```
+
 ## Introduction :
 
 Le Deep Q Learning est l’intersection du Deep Learning avec le Q Learning. La méthode itérative servant à calculer les q valeurs, dans le Q learning classique, est remplacé par un réseau de neurones.
@@ -49,25 +64,23 @@ Le réseau neuronal créé est un perceptron multi-couches. Il est composé d'un
 On utilise des fonction max et argmax en dehors du réseau neuronal, à l'intérieur des fonctions activant le réseau. 
 
 **Question 6:**
-La stratégie que nous avons choisit c’est la méthode ε − greedy. 
+La stratégie que nous avons choisit est la méthode ε − greedy. 
 ε étant le ratio d'exploitation, initialisé à 1 au début car l’agent ignore l'environnement. 
-Dans la classe stratégie, nous avons implémenté la méthode getExplorationRate() qui donne le ratio de l'exploration (epsilon) après avoir effectué l’expontential decay. Ceci permet de réduire la valeur d’epsilon d’une façon exponentielle par rapport à sa valeur. ε représente en quelque sorte la probabilité de vouloir explorer. 
+Dans la classe stratégie, nous avons implémenté la méthode getExplorationRate() qui donne le ratio de l'exploration (epsilon) après avoir effectué l’expontential decay. Ceci permet de réduire la valeur d’epsilon de façon exponentielle par rapport à sa valeur. ε représente la probabilité d'exploration (1 - ε la probabilité d'intensification/exploitation). 
 
-Pour choisir s'il faut faire de l’exploitation ou de l’exploration, une variable r reçoit une valeur au hasard entre 0 et 1. Si cette valeur est supérieure à ε, alors la prochaine action serait d'exploiter, si non, l’agent explore.
+Pour choisir s'il faut faire de l’exploitation ou de l’exploration, une variable r reçoit une valeur au hasard entre 0 et 1. Si cette valeur est supérieure à ε, alors la prochaine action sera d'exploiter, sinon l’agent explorera.
  
 
 **Question 7:**
-Si on utilise le meme réseau de neurone pour trouver la q valeur calculé et la q valeur target, celui ci ne va pas apprendre. L’état actuel et l’état suivant étant successives donc les poids utilisé pour calculer q pour s ne doivent pas être les meme pour s'; au lieu de converger, les valeurs vont bouger dans le meme sens rendant l'optimisation quasi-impossible.
-au lieu d'utiliser le meme réseau, on a crée un target network pour les q target et un policy network pour les q cackle
-les poids du réseau target sont fixé et égale au poids originales du réseau politique. 
+Si on utilise le meme réseau de neurone pour trouver la q valeur calculée et la q valeur target, celui ci ne va pas apprendre. L’état actuel et l’état suivant étant successifs, les poids utilisé pour calculer q pour s ne doivent pas êtres les mêmes pour s' ; au lieu de converger, les valeurs vont bouger dans le même sens rendant l'optimisation quasi-impossible.
+Au lieu d'utiliser le meme réseau, on a crée un target network pour les q target et un policy network pour les q cackle. Les poids du réseau target sont fixés et égaux au poids originaux du réseau politique. 
 
 
 **Question 8:**
-Nous avons choisit de mettre a jour les poids du réseau target , chaque 1000 pas d’apprentissage. N est devenu un hyperparametre pour notre DQN
-
-
+Nous avons choisi de mettre à jour les poids du réseau target chaque 1000 pas d’apprentissage. N est devenu un hyperparametre pour notre DQN.
 
 
 #### Expérience plus difficile : VizDoom
 
 Nous avons manqué de temps et n'avons malheuresement pas pu faire cette partie du TP.
+
