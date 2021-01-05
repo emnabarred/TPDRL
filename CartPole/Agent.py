@@ -16,7 +16,7 @@ class Agent():
 
 
     def select_action(self, state, test=False):
-        lr = self.strategy.epsilon
+        r = random.uniform(0, 1)
         self.currentStep += 1
         state = torch.FloatTensor(state).to(self.device)
         Q = self.targetNet(state).view([-1])
@@ -24,17 +24,15 @@ class Agent():
         # exploitation: on prend l'action qui a la q valeur maximale
         if test:
             action = torch.argmax(Q).item()
-
-
         # En mode test: si le learning rate est inferieur à
         # la variable aléatoire r, c'est qu'il faut exploiter
         else:
-            if lr < random.uniform(0, 1):
-                action = torch.argmax(Q).item()
-            #sinon on explore au hazard parmis les actions possible
-            else:
+            if r < self.strategy.epsilon:
+                # on explore au hazard parmis les actions possible
                 action = random.randrange(self.actionsSize)
-
+            else:
+                # on choisit la meilleure action
+                action = torch.argmax(Q).item()
         self.targetNet.train()
         return action
 
