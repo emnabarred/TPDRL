@@ -48,11 +48,11 @@ class Agent():
 
         batch_loader_loader = torch.utils.data.DataLoader(self.memory.getBatch(batchSize), batch_size=1, shuffle=True)
 
-
         for (state, action, nextState, reward, done) in batch_loader_loader:
             self.optimizer.zero_grad()
-            Qcalcul = self.policyNet(state.float())
-            Qtarget = self.targetNet(state.float())
+            Qcalcul = torch.max(self.policyNet(state.float()))
+            Qtarget = torch.max(self.targetNet(state.float()))
+
             loss = self.criterion(Qtarget, Qcalcul)
             loss.backward()
             self.optimizer.step()
