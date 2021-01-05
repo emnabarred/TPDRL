@@ -21,7 +21,7 @@ gamma = 0.999 # ratio de réduction (discount rate)
 alpha = 0.0001 # ratio d'apprentissage (learning Rate)
 bufferSize = 10000
 batchSize = 30
-trainStep = 100
+trainStep = 100 #N étapes d’apprentissage
 numTests = 100
 
 env = gym.make('CartPole-v1').unwrapped
@@ -30,7 +30,7 @@ stateShape = env.observation_space.shape[0]
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-strategy = EpsilonGreedyStrategy(epsilon, epsilonMin, epsilonDecay)
+strategy = EpsilonGreedyStrategy(epsilon, epsilonMax, epsilonDecay)
 
 memory = Memory(bufferSize)
 
@@ -73,7 +73,6 @@ if not testing:
             score += reward
            # print(agent.memory.memoryFSpace())
             if agent.memory.memoryFSpace() > batchSize:
-                print("here")
                 agent.learn(trainStep, batchSize, gamma)
             state = nextState
         scores.append(score)

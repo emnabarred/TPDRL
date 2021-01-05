@@ -29,7 +29,6 @@ def plotting(score):
 for e in range(numEpisods):
     state = env.reset()
     done = False
-    observation = env.reset()
     for t in range(maxStep):
         env.render()
         action = env.action_space.sample()
