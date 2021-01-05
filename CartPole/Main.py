@@ -38,8 +38,8 @@ memory = Memory(bufferSize)
 policyNet = Net(actionSize).to(device)
 targetNet = Net(actionSize).to(device)
 try:
-    policyNet.load_state_dict(torch.load("Save/" + "Cartepole/save", map_location=device))
-    targetNet.load_state_dict(torch.load("Save/" + "Cartepole/save", map_location=device))
+    policyNet.load_state_dict(torch.load("save/policymodelCartpool.data", map_location=device))
+    targetNet.load_state_dict(torch.load("save/policymodelCartpool.data", map_location=device))
 except:
     pass
 targetNet.load_state_dict(policyNet.state_dict())
