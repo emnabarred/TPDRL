@@ -10,16 +10,15 @@ from CartPole.ReplayMemory import Memory
 from CartPole.DQNN import Net
 
 # parametres
-test = False # test = False : train
-numEpisodes = 200
-maxStep = 100
+testing = False # test = False : train
+numEpisodes = 10000
+maxStep = 1000
 epsilon = 1 # ratio d'exploration (exploration rate)
 epsilonMax = 1
 epsilonMin = 0.01
 epsilonDecay = 0.1 # valeur de décret de l'exploration rate
-LR = 1e-4
 gamma = 0.999 # ratio de réduction (discount rate)
-alpha = 0.001 # ratio d'apprentissage (learning Rate)
+alpha = 0.0001 # ratio d'apprentissage (learning Rate)
 bufferSize = 10000
 batchSize = 100
 trainStep = 1000
@@ -45,41 +44,36 @@ except:
 targetNet.load_state_dict(policyNet.state_dict())
 #Pour préciser que ça ne sera utiliser que pour evaluer
 targetNet.eval()
-optimizer = optim.Adam(params=policyNet.parameters(), lr=LR)
+optimizer = optim.Adam(params=policyNet.parameters(), lr=alpha)
 criterion = nn.MSELoss().to(device)
 agent = Agent(strategy, actionSize, device, memory, targetNet, policyNet, optimizer)
 scores = []
 
 def plotting(score):
-    plt.figure(2)
     plt.clf()
-    plt.title("Reward")
-    plt.xlabel('Episode')
-    plt.ylabel('Steps')
     plt.plot(score)
+    plt.title("Suivi évolution")
+    plt.xlabel("Épisode")
+    plt.ylabel("Pas")
     plt.grid()
+    plt.savefig('evolutionCartPoleEgreedy.png')
     plt.pause(0.001)
 
-if not test:
+#training
+if not testing:
     for e in range(numEpisodes):
         state = env.reset()
         score = 0
-
+        env.render()
         for s in range(maxStep):
-            env.render()
-
             action = agent.select_action(state)
             nextState, reward, done, info = env.step(action)
             agent.remember(state, action, nextState, reward, done)
-
             score += reward
             if memory.memoryFSpace() > batchSize:
                 agent.learn(trainStep, batchSize, gamma)
             state = nextState
         scores.append(score)
-
-        print("Episode : ", e, " | Steps : ", scores[-1])
-
         if e % 20 == 0 :  # Sauvegarde du DQN tout les 20 episodes
             print("Saved !")
             torch.save(policyNet.state_dict(), "save/policymodelCartpool.data")
@@ -89,6 +83,7 @@ if not test:
     torch.save(policyNet.state_dict(), "save/policymodel_cartpool.data")
 
 score = []
+#testing
 for k in range(numTests):
     state = env.reset()
     s = 0
@@ -101,8 +96,8 @@ for k in range(numTests):
     score.append(s)
     print("Test Episode ", k + 1, " : ", s)
 
-print("AVG : ", np.mean(score))
-print("STD : ", np.std(score))
+print("récompense moyenne : ", np.mean(score))
+
 env.close()
 
 
