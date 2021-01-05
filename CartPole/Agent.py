@@ -1,6 +1,8 @@
 import random
 import torch
 
+NB_EPOCHS = 10
+
 class Agent():
     def __init__(self, strategy, actionSize, device, memory, targetNet, policyNet, optimizer, criterion):
         self.currentStep = 0
@@ -41,23 +43,26 @@ class Agent():
 
     def learn(self, trainStep, batchSize, gamma):
         r = self.strategy.getExplorationRate(self.currentStep)
-        self.stepCounter =+1
+        self.stepCounter +=1
         print(self.stepCounter)
 
         if self.stepCounter < trainStep:
             return
 
-        state, action, nextState, reward, done = self.memory.getBatch(batchSize)
-        Qcalcul = self.targetNet(state).gather(1, action.long().unsqueeze(1))
-        Qcalcul = Qcalcul.reshape([batchSize])
-        nextQ = self.targetNet(nextState).detach
-        Qtarget = reward + gamma * nextQ.max(1)[0].reshape([batchSize])
+        batch_loader_loader = torch.utils.data.DataLoader(self.memory.getBatch(batchSize), batch_size=1, shuffle=True)
 
-        # Optimization
-        self.optimizer.zero_grad()
-        loss = self.criterion(Qcalcul, Qtarget)
-        loss.backward()
-        self.optimizer.step()
+        for n in range(NB_EPOCHS):
+            for (state, action, nextState, reward, done) in batch_loader_loader:
+                Qcalcul = self.targetNet(state).gather(1, action.long().unsqueeze(1))
+                Qcalcul = Qcalcul.reshape([batchSize])
+                nextQ = self.targetNet(nextState).detach
+                Qtarget = reward + gamma * nextQ.max(1)[0].reshape([batchSize])
+
+                # Optimization
+                self.optimizer.zero_grad()
+                loss = self.criterion(Qtarget, Qcalcul)
+                loss.backward()
+                self.optimizer.step()
 
         # LOG
         if self.sc % 1000 == 0:
