@@ -16,11 +16,6 @@ class Agent():
         self.optimizer = optimizer
         self.criterion = criterion
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.tempNet = Net(actionSize).to(device)
-        self.tempNet.load_state_dict(targetNet.state_dict())
-
-
     def select_action(self, state, test=False):
         r = random.uniform(0, 1)
         self.currentStep += 1
@@ -59,11 +54,11 @@ class Agent():
             for (state, action, nextState, reward, done) in batch_loader_loader:
                 self.optimizer.zero_grad()
                 Qcalcul = self.policyNet(state.float())
-                Qtarget = self.tempNet(state.float())
+                Qtarget = self.targetNet(state.float())
                 loss = self.criterion(Qtarget, Qcalcul)
                 loss.backward()
                 self.optimizer.step()
 
         # LOG
-        if self.sc % 1000 == 0:
-            self.tempNet.load_state_dict(targetNet.state_dict())
+        if self.stepCounter % 1000 == 0:
+            self.targetNet.load_state_dict(policyNet.state_dict())
