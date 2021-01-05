@@ -34,7 +34,6 @@ class Agent():
             else:
                 # on choisit la meilleure action
                 action = torch.argmax(Q).item()
-        self.targetNet.train()
         return action
 
     def remember(self, state, action, nextState, reward, done):
@@ -43,22 +42,21 @@ class Agent():
     def learn(self, trainStep, batchSize, gamma):
         r = self.strategy.getExplorationRate(self.currentStep)
         self.stepCounter +=1
-        print(self.stepCounter)
 
         if self.stepCounter < trainStep:
             return
 
         batch_loader_loader = torch.utils.data.DataLoader(self.memory.getBatch(batchSize), batch_size=1, shuffle=True)
 
-        for n in range(NB_EPOCHS):
-            for (state, action, nextState, reward, done) in batch_loader_loader:
-                self.optimizer.zero_grad()
-                Qcalcul = self.policyNet(state.float())
-                Qtarget = self.targetNet(state.float())
-                loss = self.criterion(Qtarget, Qcalcul)
-                loss.backward()
-                self.optimizer.step()
+
+        for (state, action, nextState, reward, done) in batch_loader_loader:
+            self.optimizer.zero_grad()
+            Qcalcul = self.policyNet(state.float())
+            Qtarget = self.targetNet(state.float())
+            loss = self.criterion(Qtarget, Qcalcul)
+            loss.backward()
+            self.optimizer.step()
 
         # LOG
         if self.stepCounter % 1000 == 0:
-            self.targetNet.load_state_dict(policyNet.state_dict())
+            self.targetNet.load_state_dict(self.policyNet.state_dict())
